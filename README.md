@@ -2,7 +2,7 @@
 
 I am soon to be a graduaute from the College of New Jersey. In the fall I will be studying physics at Georgia Tech.
 
-![Big Telescope](https://github.com/sofiastepanoff/sofiastepanoff.github.io/edit/main/Pictures/IMG_2151.JPG)
+![Big Telescope](sofiastepanoff.github.io/Pictures/IMG_2151.JPG)
 
 
 
