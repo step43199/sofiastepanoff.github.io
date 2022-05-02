@@ -2,7 +2,7 @@
 
 I am soon to be a graduaute from the College of New Jersey. In the fall I will be studying physics at Georgia Tech.
 
-![Big Telescope](/least-github-pages/pictures/IMG_2151.JPG)
+![Big Telescope](/docs/pictures/IMG_2151.JPG)
 
 
 
