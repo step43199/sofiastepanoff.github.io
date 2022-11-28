@@ -10,11 +10,26 @@ import matplotlib.pyplot as plt
 import datetime
 from astropy.io import ascii
 import numpy as np
+import sys
 
 LARGEFONT = ("Verdana", 35,)
 MedFONT = ("Verdana", 25)
 SmFONT = ("Verdana", 15)
 
+
+class popupWindow(object):
+    def __init__(self, master):
+        top = self.top = tk.Toplevel(master)
+        self.l = tk.Label(top, text="Hello World")
+        self.l.pack()
+        self.e = tk.Entry(top)
+        self.e.pack()
+        self.b = tk.Button(top, text='Ok', command=self.cleanup)
+        self.b.pack()
+
+    def cleanup(self):
+        self.value = self.e.get()
+        self.top.destroy()
 
 class tkinterApp(tk.Tk):
 
@@ -219,10 +234,13 @@ class StartPage(tk.Frame):
         # using grid
         # button1.grid(row=1, column=1, padx=10, pady=10)
 
+
         ## button to show frame 2 with text layout2
-        button2 = ttk.Button(self, text="Page 2",
-                             command=lambda: controller.show_frame(Page2))
-        button2.grid(row=2, column=1, padx=10, pady=10)
+        #button2 = ttk.Button(self, text="Page 2",
+        #                     command=lambda: controller.show_frame(Page2))
+        #button2.grid(row=2, column=1, padx=10, pady=10)
+
+
         weather_data_location = 'weatherdata.txt'
         def make_plots_and_labels(file):
 
@@ -248,9 +266,9 @@ class StartPage(tk.Frame):
                     127, 133,
                     141,
                     147, 153, 159, 163, 167, 170, 171, 193, 199, 204)
-                obsres = ascii.read(file, format='fixed_width_no_header', data_start=0,
-                                    col_starts=obs_col_pos,
-                                    names=obs_col_names)
+                #obsres = ascii.read(file, format='fixed_width_no_header', data_start=0, col_starts=obs_col_pos, names=obs_col_names)
+                obsres = ascii.read(file, format='no_header', data_start=0, delimiter=',',names=obs_col_names)
+
                 # return obsres
                 # print(obsres)
 
@@ -307,7 +325,7 @@ class StartPage(tk.Frame):
                     fig.clear()
                     # FIx so not to many figures will be made
 
-                fig = plt.figure()
+
                 plot_format(date, wind_direction, 'Date', 'Wind Direction (Degrees)', 'Wind_direction_over_time',
                             'green',fig)
                 plot_format(date, tempature, 'Date', 'Tempature (Degrees)', 'Temperature_over_time', 'red',fig)
@@ -315,6 +333,7 @@ class StartPage(tk.Frame):
                 plot_format(date, wind_speed, 'Date', 'Wind Speed (units)', 'Wind_speed_over_time', 'purple',fig)
                 plot_format(date, dew_point, 'Date', 'Dew Point (Degrees)', 'Dewpoint_over_time', 'orange',fig)
                 plot_format(date, pressure, 'Date', 'Pressure (units)', 'Pressure_over_time', 'pink',fig)
+
 
             save_plot_png()
 
@@ -349,7 +368,9 @@ class StartPage(tk.Frame):
                 tk.Label(self, text=f'{astro_twi}', font=SmFONT).place(x=1300, y=905)
 
             create_labels()
-            canvas.after(5000, make_plots_and_labels, weather_data_location)
+            canvas.after(15000, make_plots_and_labels, weather_data_location)
+
+        fig = plt.figure()
         make_plots_and_labels(weather_data_location)
 
 
@@ -363,8 +384,9 @@ class Page1(tk.Frame):
 
 
 
-        label = ttk.Label(self, text="Weather Data", font=LARGEFONT)
-        label.grid(row=0, column=4, padx=10, pady=10)
+
+        label = ttk.Label(self, text="Weather Data Plots", font=LARGEFONT)
+        label.place(x=25,y=25)
 
         # button to show frame 2 with text
         # layout2
@@ -373,16 +395,42 @@ class Page1(tk.Frame):
 
         # putting the button in its place
         # by using grid
-        button1.grid(row=1, column=1, padx=10, pady=10)
+        button1.place(x=100, y=450, height=50, width=150)
 
         # button to show frame 2 with text
         # layout2
-        button2 = ttk.Button(self, text="Page 2",
+        button2 = ttk.Button(self, text=" More Weather Plots",
                              command=lambda: controller.show_frame(Page2))
 
         # putting the button in its place by
         # using grid
-        button2.grid(row=2, column=1, padx=10, pady=10)
+        button2.place(x=100, y=500, height=50, width=150)
+
+
+
+        def open_popup():
+            top = tk.Toplevel(self)
+            top.geometry("750x250")
+            top.title("Weather Data Search")
+            tk.Label(top, text="Please enter a date for the weather graphs you want to look at").place(x=25, y=25)
+            tk.Label(top, text="Ex. MxDxYxxx").place(x=25, y=50)
+
+            e = tk.Entry(top)
+            e.place(x=25,y=75)
+
+            def get_date_value():
+                v = e.get()
+                return print(v)
+            tk.Button(top, text='Ok', command=get_date_value).place(x=25,y=100)
+
+
+        # TO DO
+        button3 = ttk.Button(self,text= "Weather Data Search",command=open_popup)
+        button3.place(x=100, y=550, height=50, width=150)
+
+
+
+
 
         def weather_plots(file_path_in):
             #list_in_files = glob.glob(file_path_in)
@@ -391,23 +439,23 @@ class Page1(tk.Frame):
             # ttk.Label(self, text=str(os.path.basename(file_in)), font=SmFONT).place(x=350, y=400)
             plot_1 = Image.open(f'{file_path_in}Dewpoint_over_time.png').resize((550, 350))
             self.plot_1 = ImageTk.PhotoImage(plot_1)
-            tk.Button(self, text='Click Me !', image=self.plot_1).place(x=350, y=25)
+            tk.Button(self, text='Click Me !', image=self.plot_1).place(x=325, y=125)
 
             plot_2 = Image.open(f'{file_path_in}Temperature_over_time.png').resize((550, 350))
             self.plot_2 = ImageTk.PhotoImage(plot_2)
-            tk.Button(self, text='Click Me !', image=self.plot_2).place(x=350, y=400)
+            tk.Button(self, text='Click Me !', image=self.plot_2).place(x=325, y=500)
 
             plot_3 = Image.open(f'{file_path_in}Pressure_over_time.png').resize((550, 350))
             self.plot_3 = ImageTk.PhotoImage(plot_3)
-            tk.Button(self, text='Click Me !', image=self.plot_3).place(x=950, y=25)
+            tk.Button(self, text='Click Me !', image=self.plot_3).place(x=925, y=125)
 
             plot_4 = Image.open(f'{file_path_in}Wind_direction_over_time.png').resize((550, 350))
             self.plot_4 = ImageTk.PhotoImage(plot_4)
-            tk.Button(self, text='Click Me !', image=self.plot_4).place(x=950, y=400)
+            tk.Button(self, text='Click Me !', image=self.plot_4).place(x=925, y=500)
 
-            plot_5 = Image.open(f'{file_path_in}Wind_speed_over_time.png').resize((550, 350))
-            self.plot_5 = ImageTk.PhotoImage(plot_5)
-            tk.Button(self, text='Click Me !', image=self.plot_5).place(x=950, y=775)
+            #plot_5 = Image.open(f'{file_path_in}Wind_speed_over_time.png').resize((550, 350))
+            #self.plot_5 = ImageTk.PhotoImage(plot_5)
+            #tk.Button(self, text='Click Me !', image=self.plot_5).place(x=950, y=775)
 
             canvas.after(500, weather_plots, file_path_in)
 
@@ -425,17 +473,18 @@ class Page1(tk.Frame):
 class Page2(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
-        label = ttk.Label(self, text="Page 2", font=LARGEFONT)
+        canvas = tk.Canvas()
+        label = ttk.Label(self, text="More Weather Data", font=LARGEFONT)
         label.grid(row=0, column=4, padx=10, pady=10)
 
         # button to show frame 2 with text
         # layout2
-        button1 = ttk.Button(self, text="Page 1",
+        button1 = ttk.Button(self, text="Weather Data Plot 1",
                              command=lambda: controller.show_frame(Page1))
 
         # putting the button in its place by
         # using grid
-        button1.grid(row=1, column=1, padx=10, pady=10)
+        button1.place(x=100, y=450, height=50, width=150)
 
         # button to show frame 3 with text
         # layout3
@@ -444,11 +493,42 @@ class Page2(tk.Frame):
 
         # putting the button in its place by
         # using grid
-        button2.grid(row=2, column=1, padx=10, pady=10)
+        button2.place(x=100, y=400, height=50, width=150)
+
+        def weather_plots(file_path_in):
+            #list_in_files = glob.glob(file_path_in)
+            #file_in = max(list_in_files, key=os.path.getctime)
+            # print(f"hey {file_out}")
+            # ttk.Label(self, text=str(os.path.basename(file_in)), font=SmFONT).place(x=350, y=400)
+
+
+            plot_1 = Image.open(f'{file_path_in}Wind_speed_over_time.png').resize((550, 350))
+            self.plot_1 = ImageTk.PhotoImage(plot_1)
+            tk.Button(self, text='Click Me !', image=self.plot_1).place(x=325, y=125)
+            '''
+            plot_2 = Image.open(f'{file_path_in}Temperature_over_time.png').resize((550, 350))
+            self.plot_2 = ImageTk.PhotoImage(plot_2)
+            tk.Button(self, text='Click Me !', image=self.plot_2).place(x=325, y=500)
+
+            plot_3 = Image.open(f'{file_path_in}Pressure_over_time.png').resize((550, 350))
+            self.plot_3 = ImageTk.PhotoImage(plot_3)
+            tk.Button(self, text='Click Me !', image=self.plot_3).place(x=925, y=125)
+
+            plot_4 = Image.open(f'{file_path_in}Wind_direction_over_time.png').resize((550, 350))
+            self.plot_4 = ImageTk.PhotoImage(plot_4)
+            tk.Button(self, text='Click Me !', image=self.plot_4).place(x=925, y=500)
+            '''
+            canvas.after(500, weather_plots, file_path_in)
+
+        weather_plots("C:\\Users\Ginkl\Documents\TrintyWork\weather_plots\\")
+
+        def weather_plots_folder():
+            os.startfile(r'C:\\Users\Ginkl\Documents\TrintyWork\weather_plots')
 
 
 # Driver Code
 
 app = tkinterApp()
 app.geometry('1500x1000')
+app.title("Trinity GUI")
 app.mainloop()
